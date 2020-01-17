@@ -5,10 +5,7 @@ using System.Threading;
 using UnityEngine;
 
 /*
- * 
- * Just a Hello World here XD
- * Git is not working!!!
- * Test git 001
+ * Hello World.
  * 
  * All script made by Winter4T2H.
  * 
@@ -18,49 +15,78 @@ public class PlayerMovement : MonoBehaviour
 {
     public CharacterController controller;
 
+    // Varible
     public float speed = 12f;
     public float gravity = -20f;
     public float jumpHeight = 3f;
     public bool secondJump;
 
+    // Checks, Masks
     public Transform groundCheck;
     public float groundDistance = 0.4f;
     public LayerMask groundMask;
 
+    // Layers
     public float wallDistance = 0.1f;
     public Transform leftWCheck;
     public LayerMask leftWMask;
     public Transform rightWCheck;
     public LayerMask rightWMask;
-
     Vector3 velocity;
+
+    // Detector
     public bool isGrounded;
     public bool rightWtouch;
     public bool leftWtouch;
-    // Update is called once per frame
 
+    // Global caches
+
+    public float x;
+    public float z;
+    public float speedcache;
+    public float xcache;
+    public float zcache;
+    //                                 //
+    // Start run once on start         //
+    //                                 //
     void Start()
     {
         Thread th_Gravity = new Thread(GravityFunc);
         th_Gravity.Start();
     }
+
+    //                                 //
+    // Update is called once per frame //
+    //                                 //
     void Update()
     {
         isGrounded = Physics.CheckSphere(groundCheck.position, groundDistance, groundMask);
-
         float x = Input.GetAxis("Horizontal");
         float z = Input.GetAxis("Vertical");
-        if(isGrounded == true)
+
+
+
+        //OriginL: // Vector3 move = transform.right * x + transform.forward * z;
+        Vector3 move = transform.right * x + transform.forward * z;
+        controller.Move(move * speed * Time.deltaTime);
+
+        
+
+        if (Input.GetButtonDown("Jump") && isGrounded)
         {
-            Vector3 move = transform.right * x + transform.forward * z;
-            controller.Move(move * speed * Time.deltaTime);
+            velocity.y = Mathf.Sqrt(jumpHeight * 2f * -2f * gravity);
+            Thread th_Jumpss = new Thread(Jumpssss);
+            th_Jumpss.Start();
+            
         }
-        else
+        if (Input.GetButtonDown("Jump") && isGrounded != true && secondJump == false)
         {
-            Vector3 move = transform.right * x / 3 + transform.forward * z;
-            controller.Move(move * speed * Time.deltaTime);
+            secondJump = true;
+            velocity.y = Mathf.Sqrt(jumpHeight * 1.5f * -2f * gravity);
         }
-        // Sprint
+
+
+
         if (Input.GetButton("Fire3"))
         {
             speed = 24f;
@@ -70,16 +96,9 @@ public class PlayerMovement : MonoBehaviour
             speed = 12f;
         }
 
-
-        // Jump and double jump
-        if (Input.GetButtonDown("Jump") /*&& isGrounded*/)
+        if (isGrounded && velocity.y < 0)
         {
-            velocity.y = Mathf.Sqrt(jumpHeight * 2f * -2f * gravity);
-        }
-        if (Input.GetButtonDown("Jump") && isGrounded != true && secondJump == false)
-        {
-            // secondJump = true;
-            velocity.y = Mathf.Sqrt(jumpHeight * 1.5f * -2f * gravity);
+            secondJump = false; // Set secondJump to false
         }
 
         velocity.y += gravity * Time.deltaTime;
@@ -95,7 +114,6 @@ public class PlayerMovement : MonoBehaviour
             if (isGrounded && velocity.y < 0)
             {
                 velocity.y = -2f;
-                secondJump = false; // Set secondJump to false
             }
         }
     }
@@ -103,5 +121,16 @@ public class PlayerMovement : MonoBehaviour
     {
         rightWtouch = Physics.CheckSphere(rightWCheck.position, wallDistance, rightWMask);
         leftWtouch = Physics.CheckSphere(leftWCheck.position, wallDistance, leftWMask);
+    }
+    void Jumpssss()
+    {
+        speedcache = speed;
+        xcache = x;
+        zcache = z;
+        while (isGrounded != true)
+        {
+            Vector3 inairmove = new Vector3(50, 0f, 50);
+            controller.Move(inairmove * speedcache * Time.deltaTime);
+        }
     }
 }
