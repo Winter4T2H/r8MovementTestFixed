@@ -16,6 +16,7 @@ ProjectSettings/
 Temp/
 TextMesh Pro/
 *.unity
+Assets/Scripts/DeveloperLog.txt
 
 
 
