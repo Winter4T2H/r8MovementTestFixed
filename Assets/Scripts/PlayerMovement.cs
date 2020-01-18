@@ -7,8 +7,6 @@ using UnityEngine;
 /*
  * Hello World.
  * 
- * 
- * This is move 001 WAYS
  * All script made by Winter4T2H.
  * 
  */
