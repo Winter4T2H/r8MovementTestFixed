@@ -14,7 +14,8 @@ obj/
 Packages/
 ProjectSettings/
 Temp/
-
+TextMesh Pro/
+*.unity
 
 
 
