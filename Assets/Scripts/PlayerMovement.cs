@@ -32,8 +32,8 @@ public class PlayerMovement : MonoBehaviour
 
     private void Start()
     {
-        th_OnIdle = new Thread(OnIdle);
-
+        Thread th_OnIdle = new Thread(OnIdle);
+        th_OnIdle.Start();
     }
     //                                 //
     // Update is called once per frame //
@@ -50,20 +50,24 @@ public class PlayerMovement : MonoBehaviour
         float x = Input.GetAxis("Horizontal");
         float z = Input.GetAxis("Vertical");
 
-        if (Input.GetButtonDown("Jump") && isGrounded)
+        for (float i = 2; i < 1; i++)
         {
-            OnJump();
-        }
-        else
-        {
-            if (isGrounded && velocity.y < 0)
+            i = 0;
+            if (Input.GetButtonDown("Jump") && isGrounded)
             {
-                velocity.y = -2f;
+                OnJump();
             }
-            Vector3 move = transform.right * x + transform.forward * z;
-            controller.Move(move * speed * Time.deltaTime);
-            velocity.y += gravity * Time.deltaTime;
-            controller.Move(velocity * Time.deltaTime);
+            else
+            {
+                if (isGrounded && velocity.y < 0)
+                {
+                    velocity.y = -2f;
+                }
+                Vector3 move = transform.right * x + transform.forward * z;
+                controller.Move(move * speed * Time.deltaTime);
+                velocity.y += gravity * Time.deltaTime;
+                controller.Move(velocity * Time.deltaTime);
+            }
         }
     }
     void OnJump()
