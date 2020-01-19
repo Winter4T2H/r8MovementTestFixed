@@ -29,30 +29,52 @@ public class PlayerMovement : MonoBehaviour
     bool isGrounded;
 
 
+
+    private void Start()
+    {
+        th_OnIdle = new Thread(OnIdle);
+
+    }
     //                                 //
     // Update is called once per frame //
     //                                 //
     void Update()
     {
-        isGrounded = Physics.CheckSphere(groundCheck.position, groundDistance, groundMask);
+        // Empty
+    }
 
-        if (isGrounded && velocity.y < 0)
-        {
-            velocity.y = -2f;
-        }
+    void OnIdle()
+    {
+        isGrounded = Physics.CheckSphere(groundCheck.position, groundDistance, groundMask);
 
         float x = Input.GetAxis("Horizontal");
         float z = Input.GetAxis("Vertical");
 
-        Vector3 move = transform.right * x + transform.forward * z;
-        controller.Move(move * speed * Time.deltaTime);
-
         if (Input.GetButtonDown("Jump") && isGrounded)
         {
-            velocity.y = Mathf.Sqrt(jumpHeight * -2f * gravity);
+            OnJump();
         }
-
-        velocity.y += gravity * Time.deltaTime;
-        controller.Move(velocity * Time.deltaTime);
+        else
+        {
+            if (isGrounded && velocity.y < 0)
+            {
+                velocity.y = -2f;
+            }
+            Vector3 move = transform.right * x + transform.forward * z;
+            controller.Move(move * speed * Time.deltaTime);
+            velocity.y += gravity * Time.deltaTime;
+            controller.Move(velocity * Time.deltaTime);
+        }
+    }
+    void OnJump()
+    {
+        velocity.y = Mathf.Sqrt(jumpHeight * -2f * gravity);
+        for (int i = 0; isGrounded == false; i++)
+        {
+            if (isGrounded)
+            {
+                break;
+            }
+        }
     }
 }
