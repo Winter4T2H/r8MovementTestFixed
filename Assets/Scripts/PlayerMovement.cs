@@ -51,11 +51,17 @@ public class PlayerMovement : MonoBehaviour
         OnIdle();
         GravityF();
 
-        if (Input.GetButton("Jump") && secondJump == false)
+        if (Input.GetButton("Jump") && isGrounded)
         {
             inAir = true;
             velocity = transform.right * x * speed + transform.forward * z * speed;
             velocity.y = Mathf.Sqrt(jumpHeight * -2f * gravity * 2);
+        }
+        if (Input.GetButtonDown("Jump") && isGrounded != true && secondJump == false)
+        {
+            secondJump = true;
+            velocity = transform.right * x * speed + transform.forward * z * speed;
+            velocity.y = Mathf.Sqrt(jumpHeight * 1.5f * -2f * gravity);
         }
 
         if (Input.GetButton("Fire3"))
@@ -72,6 +78,7 @@ public class PlayerMovement : MonoBehaviour
     {
         if (isGrounded && velocity.y < 0)
         {
+            secondJump = false;
             inAir = false;
             velocity.z = 0f;
             velocity.x = 0f;
