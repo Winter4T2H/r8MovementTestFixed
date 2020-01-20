@@ -31,6 +31,8 @@ public class PlayerMovement : MonoBehaviour
     Vector3 velocity;
     Vector3 SpeedCheck;
     bool isGrounded;
+    bool inAir;
+    bool secondJump;
 
 
     //                                 //
@@ -38,20 +40,24 @@ public class PlayerMovement : MonoBehaviour
     //                                 //
     void Update()
     {
+        isGrounded = Physics.CheckSphere(groundCheck.position, groundDistance, groundMask);
         SpeedCheck.y = velocity.y;
         SpeedCheck.z = z * 250;
         SpeedCheck.x = x * 250;
 
-
         x = Input.GetAxis("Horizontal");
         z = Input.GetAxis("Vertical");
+
         OnIdle();
         GravityF();
-        if (Input.GetButton("Jump"))
+
+        if (Input.GetButton("Jump") && secondJump == false)
         {
+            inAir = true;
             velocity = transform.right * x * speed + transform.forward * z * speed;
             velocity.y = Mathf.Sqrt(jumpHeight * -2f * gravity * 2);
         }
+
         if (Input.GetButton("Fire3"))
         {
             speed = 24f;
@@ -64,9 +70,9 @@ public class PlayerMovement : MonoBehaviour
 
     void GravityF()
     {
-        isGrounded = Physics.CheckSphere(groundCheck.position, groundDistance, groundMask);
         if (isGrounded && velocity.y < 0)
         {
+            inAir = false;
             velocity.z = 0f;
             velocity.x = 0f;
             velocity.y = -2f;
@@ -79,7 +85,7 @@ public class PlayerMovement : MonoBehaviour
 
     void OnIdle()
     {
-        if (isGrounded == true)
+        if (inAir == false)
         {
             Vector3 move = transform.right * x + transform.forward * z;
             controller.Move(move * speed * Time.deltaTime);
